@@ -13,6 +13,12 @@ const App = () => {
 
   // useState INNERHALB der Komponente definieren
   const [cards, setCards] = useState([]);
+  //Funktion Karten mischen
+  const shuffleCards = () => {
+    const shuffled = memoryCards.sort(() => Math.random() - 0.5);
+    setCards([...shuffled]); // Neues Array erstellen
+    console.log("Karten wurden gemischt!");
+  };
 
   // Test: Karten setzen
   useEffect(() => {
@@ -36,6 +42,15 @@ const App = () => {
             <div className="text-sm mt-2">ID: {card.id}</div>
           </div>
         ))}
+      </div>
+      {/* Button Karten mischen */}
+      <div className="text-center mb-6">
+        <button
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          onClick={shuffleCards}
+        >
+          Karten mischen
+        </button>
       </div>
       {/* DEBUG: Cards-Array als formatiertes JSON anzeigen */}
       <pre className="text-blue-300">{JSON.stringify(cards, null, 2)}</pre>
