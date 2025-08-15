@@ -25,7 +25,8 @@ const App = () => {
     <div className="p-4">
       <h1 className="text-5xl font-bold underline mb-4">React + TailwindCSS</h1>
       <p className="text-3xl font-bold m-4">Anzahl Karten: {cards.length}</p>
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      {/* Grid Layout für 6 Karten jetzt responsiv durch standard/mobile-view grid-cols-1 medium/größer-view md:grid-cols-3 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {cards.map((card) => (
           <div
             key={card.id}
