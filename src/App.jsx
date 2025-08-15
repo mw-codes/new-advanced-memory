@@ -13,6 +13,11 @@ const App = () => {
 
   // useState INNERHALB der Komponente definieren
   const [cards, setCards] = useState([]);
+
+  const handleCardClick = (cardId) => {
+    console.log(`Karte mit ID ${cardId} wurde geklickt!`);
+  };
+
   //Funktion Karten mischen
   const shuffleCards = () => {
     const shuffled = memoryCards
@@ -27,7 +32,11 @@ const App = () => {
 
   // Test: Karten setzen
   useEffect(() => {
-    setCards(memoryCards);
+    const cardsWithPosition = memoryCards.map((card, index) => ({
+      ...card,
+      position: index + 1, // Position 1-6 im Grid
+    }));
+    setCards(cardsWithPosition);
     console.log("6 Karten wurden gesetzt!");
   }, []);
 
@@ -41,7 +50,8 @@ const App = () => {
         {cards.map((card) => (
           <div
             key={card.id}
-            className="bg-blue-500 hover:bg-blue-600 text-white p-6 rounded-lg text-center font-bold transition-colors duration-200 shadow-lg"
+            className="bg-blue-500 hover:bg-blue-600 text-white p-6 rounded-lg text-center font-bold transition-colors duration-200 shadow-lg cursor-pointer"
+            onClick={() => handleCardClick(card.id)}
           >
             {/* 🏷️ Position-Nummer (klein, oben) */}
             <div className="text-xs opacity-70 mb-2">
