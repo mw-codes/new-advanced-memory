@@ -15,8 +15,13 @@ const App = () => {
   const [cards, setCards] = useState([]);
   //Funktion Karten mischen
   const shuffleCards = () => {
-    const shuffled = memoryCards.sort(() => Math.random() - 0.5);
-    setCards([...shuffled]); // Neues Array erstellen
+    const shuffled = memoryCards
+      .sort(() => Math.random() - 0.5)
+      .map((card, index) => ({
+        ...card,
+        position: index + 1, // Position 1-6 im Grid
+      }));
+    setCards(shuffled);
     console.log("Karten wurden gemischt!");
   };
 
@@ -36,10 +41,18 @@ const App = () => {
         {cards.map((card) => (
           <div
             key={card.id}
-            className="bg-blue-500 text-white p-8 rounded text-center text-4xl font-bold"
+            className="bg-blue-500 hover:bg-blue-600 text-white p-6 rounded-lg text-center font-bold transition-colors duration-200 shadow-lg"
           >
-            {card.image}
-            <div className="text-sm mt-2">ID: {card.id}</div>
+            {/* 🏷️ Position-Nummer (klein, oben) */}
+            <div className="text-xs opacity-70 mb-2">
+              Position: {card.position}
+            </div>
+
+            {/* 🖼️ Hauptbild (groß) */}
+            <div className="text-4xl mb-3">{card.image}</div>
+
+            {/* 🔍 Debug-Info (klein, unten) */}
+            <div className="text-sm opacity-80">ID: {card.id}</div>
           </div>
         ))}
       </div>
