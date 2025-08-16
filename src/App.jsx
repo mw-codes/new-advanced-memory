@@ -13,9 +13,14 @@ const App = () => {
 
   // useState INNERHALB der Komponente definieren
   const [cards, setCards] = useState([]);
+  const [clickedCards, setClickedCards] = useState([]); // Leeres Array am Start
 
   const handleCardClick = (cardId) => {
     console.log(`Karte mit ID ${cardId} wurde geklickt!`);
+
+    // Karte zu geklickten Karten hinzufügen
+    setClickedCards([...clickedCards, cardId]);
+    console.log("Geklickte Karten:", [...clickedCards, cardId]);
   };
 
   //Funktion Karten mischen
@@ -47,32 +52,51 @@ const App = () => {
       <p className="text-3xl font-bold m-4">Anzahl Karten: {cards.length}</p>
       {/* Grid Layout für 6 Karten jetzt responsiv durch standard/mobile-view grid-cols-1 medium/größer-view md:grid-cols-3 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {cards.map((card) => (
-          <div
-            key={card.id}
-            className="bg-blue-500 hover:bg-blue-600 text-white p-6 rounded-lg text-center font-bold transition-colors duration-200 shadow-lg cursor-pointer"
-            onClick={() => handleCardClick(card.id)}
-          >
-            {/* 🏷️ Position-Nummer (klein, oben) */}
-            <div className="text-xs opacity-70 mb-2">
-              Position: {card.position}
+        {cards.map((card) => {
+          // 🎨 Prüfen ob Karte geklickt wurde
+          const isClicked = clickedCards.includes(card.id);
+
+          return (
+            <div
+              key={card.id}
+              className={`
+                ${
+                  isClicked
+                    ? "bg-green-500 hover:bg-green-600"
+                    : "bg-blue-500 hover:bg-blue-600"
+                }
+                text-white p-6 rounded-lg text-center font-bold 
+                transition-colors duration-200 shadow-lg cursor-pointer
+              `}
+              onClick={() => handleCardClick(card.id)}
+            >
+              {/* Position-Nummer (klein, oben) */}
+              <div className="text-xs opacity-70 mb-2">
+                Position: {card.position}
+              </div>
+
+              {/* Hauptbild (groß) */}
+              <div className="text-4xl mb-3">{card.image}</div>
+
+              {/* 🔍 Debug-Info (klein, unten) */}
+              <div className="text-sm opacity-80">ID: {card.id}</div>
             </div>
-
-            {/* 🖼️ Hauptbild (groß) */}
-            <div className="text-4xl mb-3">{card.image}</div>
-
-            {/* 🔍 Debug-Info (klein, unten) */}
-            <div className="text-sm opacity-80">ID: {card.id}</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       {/* Button Karten mischen */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-6 space-x-4">
         <button
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
           onClick={shuffleCards}
         >
           Karten mischen
+        </button>
+        <button
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          onClick={() => setClickedCards([])}
+        >
+          Klicks zurücksetzen
         </button>
       </div>
       {/* DEBUG: Cards-Array als formatiertes JSON anzeigen */}
