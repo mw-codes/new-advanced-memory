@@ -16,6 +16,11 @@ const App = () => {
   const [clickedCards, setClickedCards] = useState([]); // Leeres Array am Start
 
   const handleCardClick = (cardId) => {
+    // Limit: Maximal 2 Karten gleichzeitig
+    if (clickedCards.length >= 2) {
+      console.log("Limit erreicht! Maximal 2 Karten gleichzeitig.");
+      return; // Stopp! Keine weitere Karte hinzufügen
+    }
     console.log(`Karte mit ID ${cardId} wurde geklickt!`);
 
     // Karte zu geklickten Karten hinzufügen
@@ -76,7 +81,9 @@ const App = () => {
               </div>
 
               {/* Hauptbild (groß) */}
-              <div className="text-4xl mb-3">{card.image}</div>
+              <div className="text-4xl mb-3">
+                {isClicked ? card.image : "?"}
+              </div>
 
               {/* 🔍 Debug-Info (klein, unten) */}
               <div className="text-sm opacity-80">ID: {card.id}</div>
