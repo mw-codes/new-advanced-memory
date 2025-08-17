@@ -1,26 +1,31 @@
 import { useState, useEffect } from "react";
-
+// Test-Daten
+const memoryCards = [
+  { id: 1, image: "1" },
+  { id: 2, image: "2" },
+  { id: 3, image: "3" },
+  { id: 4, image: "1" },
+  { id: 5, image: "2" },
+  { id: 6, image: "3" },
+];
 const App = () => {
-  // Test-Daten
-  const memoryCards = [
-    { id: 1, image: "1" },
-    { id: 2, image: "2" },
-    { id: 3, image: "3" },
-    { id: 4, image: "1" },
-    { id: 5, image: "2" },
-    { id: 6, image: "3" },
-  ];
-
   // useState INNERHALB der Komponente definieren
   const [cards, setCards] = useState([]);
   const [clickedCards, setClickedCards] = useState([]); // Leeres Array am Start
 
   const handleCardClick = (cardId) => {
+    // Prüfen: Ist diese Karte bereits geklickt?
+    if (clickedCards.includes(cardId)) {
+      console.log(`Karte ${cardId} ist bereits geklickt!`);
+      return; // Stopp! Karte ist schon aufgedeckt
+    }
+
     // Limit: Maximal 2 Karten gleichzeitig
     if (clickedCards.length >= 2) {
       console.log("Limit erreicht! Maximal 2 Karten gleichzeitig.");
       return; // Stopp! Keine weitere Karte hinzufügen
     }
+
     console.log(`Karte mit ID ${cardId} wurde geklickt!`);
 
     // Karte zu geklickten Karten hinzufügen
@@ -37,7 +42,9 @@ const App = () => {
         position: index + 1, // Position 1-6 im Grid
       }));
     setCards(shuffled);
-    console.log("Karten wurden gemischt!");
+    // Karten schließen
+    setClickedCards([]);
+    console.log("Karten wurden gemischt und alle Karten geschlossen!");
   };
 
   // Test: Karten setzen
@@ -58,7 +65,7 @@ const App = () => {
       {/* Grid Layout für 6 Karten jetzt responsiv durch standard/mobile-view grid-cols-1 medium/größer-view md:grid-cols-3 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {cards.map((card) => {
-          // 🎨 Prüfen ob Karte geklickt wurde
+          // Prüfen ob Karte geklickt wurde
           const isClicked = clickedCards.includes(card.id);
 
           return (
