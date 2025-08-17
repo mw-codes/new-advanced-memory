@@ -12,8 +12,14 @@ const App = () => {
   // useState INNERHALB der Komponente definieren
   const [cards, setCards] = useState([]);
   const [clickedCards, setClickedCards] = useState([]); // Leeres Array am Start
+  const [matchedCards, setMatchedCards] = useState([]); // Gefundene Paare tracken
 
   const handleCardClick = (cardId) => {
+    // Prüfen ist die KArte bereits gefunden ?
+    if (matchedCards.includes(cardId)) {
+      console.log(`Karte ${cardId} ist bereits gefunden!`);
+      return; // Stopp! Gefundene Karten können nicht angeklickt werden
+    }
     // Prüfen: Ist diese Karte bereits geklickt?
     if (clickedCards.includes(cardId)) {
       console.log(`Karte ${cardId} ist bereits geklickt!`);
@@ -42,10 +48,46 @@ const App = () => {
         position: index + 1, // Position 1-6 im Grid
       }));
     setCards(shuffled);
-    // Karten schließen
+    // Karten schließen bzw. alle States zurücksetzen
     setClickedCards([]);
-    console.log("Karten wurden gemischt und alle Karten geschlossen!");
+    setMatchedCards([]);
+    console.log(
+      "Karten wurden gemischt, alle Karten geschlossen (reset Klicks), und gefundene paare zurück gesetzt!"
+    );
   };
+  // Paar-Erkennung wenn 2 Karten geklickt sind
+  useEffect(() => {
+    // Nur prüfen wenn genau 2 Karten geklickt sind
+    if (clickedCards.length === 2) {
+      console.log("Prüfe Paar:", clickedCards);
+
+      // Die beiden geklickten Karten finden
+      const [firstId, secondId] = clickedCards;
+      const firstCard = cards.find((card) => card.id === firstId);
+      const secondCard = cards.find((card) => card.id === secondId);
+
+      console.log("Erste Karte:", firstCard);
+      console.log("Zweite Karte:", secondCard);
+
+      // Prüfen: Haben beide das gleiche Bild?
+      if (firstCard.image === secondCard.image) {
+        // PAAR GEFUNDEN!
+        console.log("PAAR GEFUNDEN! Beide haben Bild:", firstCard.image);
+
+        // Karten als gefunden markieren
+        setMatchedCards([...matchedCards, firstId, secondId]);
+        setClickedCards([]); // Sofort für nächsten Zug bereit
+      } else {
+        // KEIN PAAR - nach 1.5 Sekunden wieder verdecken
+        console.log("Kein Paar. Karten werden in 1.5s verdeckt...");
+
+        setTimeout(() => {
+          setClickedCards([]); // Karten wieder verdecken
+          console.log("Karten wurden wieder verdeckt");
+        }, 1500);
+      }
+    }
+  }, [clickedCards, cards, matchedCards]); // Abhängigkeiten
 
   // Test: Karten setzen
   useEffect(() => {
@@ -67,19 +109,23 @@ const App = () => {
         {cards.map((card) => {
           // Prüfen ob Karte geklickt wurde
           const isClicked = clickedCards.includes(card.id);
+          const isMatched = matchedCards.includes(card.id);
+          const isVisible = isClicked || isMatched; // Sichtbar wenn geklickt ODER gefunden
 
           return (
             <div
               key={card.id}
-              className={`
-                ${
-                  isClicked
-                    ? "bg-green-500 hover:bg-green-600"
-                    : "bg-blue-500 hover:bg-blue-600"
-                }
-                text-white p-6 rounded-lg text-center font-bold 
-                transition-colors duration-200 shadow-lg cursor-pointer
-              `}
+              className={`${
+                isMatched
+                  ? "bg-yellow-500 hover:bg-yellow-600"
+                  : isClicked
+                  ? "bg-green-500 hover:bg-green-600"
+                  : "bg-blue-500 hover:bg-blue-600"
+              }
+              text-white p-6 rounded-lg text-center font-bold 
+              transition-colors duration-200 shadow-lg cursor-pointer
+              ${isMatched ? "opacity-75" : ""}
+            `}
               onClick={() => handleCardClick(card.id)}
             >
               {/* Position-Nummer (klein, oben) */}
@@ -89,7 +135,8 @@ const App = () => {
 
               {/* Hauptbild (groß) */}
               <div className="text-4xl mb-3">
-                {isClicked ? card.image : "?"}
+                {/* Sichtbarkeit des Bildes bei gecklickt und matched*/}
+                {isVisible ? card.image : "?"}
               </div>
 
               {/* 🔍 Debug-Info (klein, unten) */}
@@ -108,7 +155,10 @@ const App = () => {
         </button>
         <button
           className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          onClick={() => setClickedCards([])}
+          onClick={() => {
+            setClickedCards([]);
+            setMatchedCards([]);
+          }}
         >
           Klicks zurücksetzen
         </button>
